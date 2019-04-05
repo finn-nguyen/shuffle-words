@@ -5,18 +5,21 @@ import (
 	"io/ioutil"
 	"strings"
 	"os"
+	"math/rand"
+	"time"
 )
 
 func shuffle(word string) string {
-	newWord := ""
-	for _, character := range word {
-		if character % 2 == 0 {
-			newWord = newWord + string(character)
-		} else {
-			newWord = string(character) + newWord
-		}
+	array := strings.Split(word, "")
+	length := len(array)
+	newArr := array[:]
+	for i, _ := range newArr {
+		newIndex := rand.Intn(length)
+		temp := newArr[i]
+		newArr[i] = newArr[newIndex]
+		newArr[newIndex] = temp
 	}
-	return newWord
+	return strings.Join(newArr, "")
 }
 
 	
@@ -27,21 +30,21 @@ func check(e error) {
 }
 
 func main() {
-	buffer, err := ioutil.ReadFile("C:\\Users\\nvtuo\\Desktop\\vocabularies.txt")
-	fmt.Println(shuffle("123456789"))
+	buffer, err := ioutil.ReadFile("/Users/imac27/Desktop/test.txt")
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		text := string(buffer)
 		vocabulaires := strings.Split(strings.Replace(text, "\r\n", "\n", -1), "\n")
 		newWords := vocabulaires[:]
+		rand.Seed(time.Now().UnixNano())
 		for index := range newWords {
 			newWords[index] = shuffle(newWords[index])
 		}
 		text = strings.Join(newWords, "\r\n")
 		fmt.Println(text)
 		buffer = []byte(text)
-		newFile, err := os.Create("C:\\Users\\nvtuo\\Desktop\\vocabularies_shuffle.txt")
+		newFile, err := os.Create("/Users/imac27/Desktop/test_result.txt")
 		check(err)
 		defer newFile.Close()
 		_, err = newFile.Write(buffer)
